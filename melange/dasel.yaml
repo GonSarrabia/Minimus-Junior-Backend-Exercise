@@ -35,13 +35,7 @@ pipeline:
 
   # שלב 2: קימפול הקוד והעתקתו לתיקיית היעד של החבילה
   - runs: |
-      # וודא שאנחנו בתוך תיקיית המקור (התיקייה שבה git-checkout פרס את הקוד)
-      cd .
-      # ניקוי שאריות אם היו
-      go clean -cache
-      # קימפול מפורש
       go build -o dasel ./cmd/dasel
-      
       mkdir -p ${{targets.destdir}}/usr/bin
       install -m 755 dasel ${{targets.destdir}}/usr/bin/dasel
 

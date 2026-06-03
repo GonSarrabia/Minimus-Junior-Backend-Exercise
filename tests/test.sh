@@ -11,7 +11,7 @@ echo "=== Starting Image Tests for $IMAGE_NAME ==="
 # ---------------------------------------------------------
 # Test 1: Sanity Check
 # ---------------------------------------------------------
-echo "[1/3] Checking if dasel is present and runnable..."
+echo "[1/4] Checking if dasel is present and runnable..."
 docker run --rm "$IMAGE_NAME" version
 echo "✅ Test 1 Passed: Dasel is present and runnable."
 echo ""
@@ -19,7 +19,7 @@ echo ""
 # ---------------------------------------------------------
 # Test 2: Real Runtime Behavior
 # ---------------------------------------------------------
-echo "[2/3] Testing real runtime behavior (JSON query)..."
+echo "[2/4] Testing real runtime behavior (JSON query)..."
 JSON_DATA='{"task": "Junior Backend", "status": "Success"}'
 
 # שימוש ב-stdin כדי להעביר את הנתונים ל-dasel ולשלוף את הערך של 'status'
@@ -37,9 +37,22 @@ fi
 echo ""
 
 # ---------------------------------------------------------
-# Test 3: CVE-2026-33320 Patch Verification
+# Test 3: Architecture Check
 # ---------------------------------------------------------
-echo "[3/3] Testing CVE-2026-33320 patch (YAML Bomb / Expansion Limit)..."
+echo "[3/4] Checking image architecture is Linux AMD64 (x86_64)..."
+ARCH=$(docker run --rm --entrypoint uname "$IMAGE_NAME" -m)
+if [ "$ARCH" = "x86_64" ]; then
+    echo "✅ Test 3 Passed: Architecture is x86_64 (Linux AMD64)."
+else
+    echo "❌ Test 3 Failed: Expected x86_64, got '$ARCH'."
+    exit 1
+fi
+echo ""
+
+# ---------------------------------------------------------
+# Test 4: CVE-2026-33320 Patch Verification
+# ---------------------------------------------------------
+echo "[4/4] Testing CVE-2026-33320 patch (YAML Bomb / Expansion Limit)..."
 
 # יצירת "פצצת YAML" קטנה שמנצלת Alias כדי ליצור עומק רב
 YAML_BOMB="
@@ -57,10 +70,10 @@ set -e
 
 # בדיקה אם הפקודה נכשלה ואם הודעת השגיאה מכילה את המילים מהפאטץ' שהוספנו
 if [ $EXIT_CODE -ne 0 ] && [[ "$ERROR_OUTPUT" == *"yaml expansion"* ]]; then
-     echo "✅ Test 3 Passed: CVE patch verified. Dasel successfully blocked the YAML bomb."
+     echo "✅ Test 4 Passed: CVE patch verified. Dasel successfully blocked the YAML bomb."
      echo "   (Error received: $ERROR_OUTPUT)"
 else
-     echo "❌ Test 3 Failed: Dasel accepted the YAML bomb or returned an unexpected error."
+     echo "❌ Test 4 Failed: Dasel accepted the YAML bomb or returned an unexpected error."
      echo "   Exit code: $EXIT_CODE"
      echo "   Output: $ERROR_OUTPUT"
      exit 1
