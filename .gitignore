@@ -1,0 +1,10 @@
+# Build artifacts
+*.tar
+packages/
+
+# Generated keys
+*.rsa
+*.rsa.pub
+
+# SBOM output
+sbom-*.json

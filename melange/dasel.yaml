@@ -15,6 +15,7 @@ environment:
       - alpine-baselayout
       - ca-certificates-bundle
       - go 
+      - patch # עדיין חובה כדי ש-Melange יוכל להחיל את הפאץ'
 
 pipeline:
   - uses: git-checkout
@@ -22,10 +23,15 @@ pipeline:
       repository: https://github.com/TomWright/dasel
       tag: v3.3.1
 
-  # מקום שמור לשלב ה-patch שנוסיף בהמשך
-  # - uses: patch
-  #   with:
-  #     patches: ../patches/cve-2026-33320.patch
+  # שימוש בפאץ' המקומי שיצרת (נלקח אוטומטית מאותה תיקייה של ה-YAML)
+  - uses: patch
+    with:
+      patches: CVE-2026-33320.patch
+
+  # פקודת אימות: נדפיס את השינויים כדי לוודא שהפאץ' הוחל בהצלחה
+  - runs: |
+      echo "=== Verifying applied patch ==="
+      git diff --stat
 
   # שלב 2: קימפול הקוד והעתקתו לתיקיית היעד של החבילה
   - runs: |
@@ -37,3 +43,13 @@ pipeline:
       
       # העתקת הקובץ הבינארי עם הרשאות ריצה
       install -m 755 dasel ${{targets.destdir}}/usr/bin/dasel
+
+test:
+  environment:
+    contents:
+      packages:
+        - dasel
+  pipeline:
+    - runs: |
+        echo "Testing if dasel binary is runnable..."
+        dasel --version

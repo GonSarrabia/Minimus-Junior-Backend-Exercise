@@ -1,0 +1,14 @@
+contents:
+  repositories:
+    - https://dl-cdn.alpinelinux.org/alpine/edge/main
+    - "@local ./packages"
+  
+  packages:
+    - alpine-baselayout
+    - dasel@local
+
+entrypoint:
+  command: /usr/bin/dasel
+
+archs:
+  - x86_64
