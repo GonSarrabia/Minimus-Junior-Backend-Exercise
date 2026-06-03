@@ -23,7 +23,7 @@ echo "[2/3] Testing real runtime behavior (JSON query)..."
 JSON_DATA='{"task": "Junior Backend", "status": "Success"}'
 
 # שימוש ב-stdin כדי להעביר את הנתונים ל-dasel ולשלוף את הערך של 'status'
-RESULT=$(echo "$JSON_DATA" | docker run -i --rm "$IMAGE_NAME" -r json '.status')
+RESULT=$(echo "$JSON_DATA" | docker run -i --rm "$IMAGE_NAME" -i json 'status')
 
 # ניקוי התוצאה ממרכאות (במידה ו-dasel מחזיר אותן)
 CLEAN_RESULT=$(echo "$RESULT" | tr -d '"' | tr -d '\n' | tr -d '\r')
@@ -51,7 +51,7 @@ d: &d [*c,*c,*c,*c,*c,*c,*c,*c,*c]
 
 # אנחנו מצפים שהפקודה הזו תיכשל, לכן נכבה זמנית את set -e
 set +e
-ERROR_OUTPUT=$(echo "$YAML_BOMB" | docker run -i --rm "$IMAGE_NAME" -r yaml '.' 2>&1)
+ERROR_OUTPUT=$(echo "$YAML_BOMB" | docker run -i --rm "$IMAGE_NAME" -i yaml 'd' 2>&1)
 EXIT_CODE=$?
 set -e
 

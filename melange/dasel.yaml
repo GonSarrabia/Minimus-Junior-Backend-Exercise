@@ -1,7 +1,7 @@
 package:
   name: dasel
   version: 3.3.1
-  epoch: 0
+  epoch: 1
   description: A CLI tool to query and modify data structures
   copyright:
     - license: MIT
@@ -35,13 +35,14 @@ pipeline:
 
   # שלב 2: קימפול הקוד והעתקתו לתיקיית היעד של החבילה
   - runs: |
-      # קימפול הקובץ הבינארי
+      # וודא שאנחנו בתוך תיקיית המקור (התיקייה שבה git-checkout פרס את הקוד)
+      cd .
+      # ניקוי שאריות אם היו
+      go clean -cache
+      # קימפול מפורש
       go build -o dasel ./cmd/dasel
       
-      # יצירת נתיב ההתקנה בתוך החבילה (usr/bin/)
       mkdir -p ${{targets.destdir}}/usr/bin
-      
-      # העתקת הקובץ הבינארי עם הרשאות ריצה
       install -m 755 dasel ${{targets.destdir}}/usr/bin/dasel
 
 test:
