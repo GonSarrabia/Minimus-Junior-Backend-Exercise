@@ -14,8 +14,8 @@ environment:
     packages:
       - alpine-baselayout
       - ca-certificates-bundle
-      - go 
-      - patch # עדיין חובה כדי ש-Melange יוכל להחיל את הפאץ'
+      - go
+      - patch
 
 pipeline:
   - uses: git-checkout
@@ -23,17 +23,14 @@ pipeline:
       repository: https://github.com/TomWright/dasel
       tag: v3.3.1
 
-  # שימוש בפאץ' המקומי שיצרת (נלקח אוטומטית מאותה תיקייה של ה-YAML)
   - uses: patch
     with:
       patches: CVE-2026-33320.patch
 
-  # פקודת אימות: נדפיס את השינויים כדי לוודא שהפאץ' הוחל בהצלחה
   - runs: |
       echo "=== Verifying applied patch ==="
       git diff --stat
 
-  # שלב 2: קימפול הקוד והעתקתו לתיקיית היעד של החבילה
   - runs: |
       go build -o dasel ./cmd/dasel
       mkdir -p ${{targets.destdir}}/usr/bin
@@ -46,5 +43,4 @@ test:
         - dasel
   pipeline:
     - runs: |
-        echo "Testing if dasel binary is runnable..."
         dasel --version
