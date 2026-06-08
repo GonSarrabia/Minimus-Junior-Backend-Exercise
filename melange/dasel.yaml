@@ -22,6 +22,7 @@ pipeline:
     with:
       repository: https://github.com/TomWright/dasel
       tag: v3.3.1
+      expected-commit: fba653c7f248aff10f2b89fca93929b64707dfc8
 
   - uses: patch
     with:

@@ -35,11 +35,11 @@ echo ""
 # Test 3: Architecture Check
 # ---------------------------------------------------------
 echo "[3/4] Checking image architecture is Linux AMD64 (x86_64)..."
-ARCH=$(docker run --rm --entrypoint uname "$IMAGE_NAME" -m)
-if [ "$ARCH" = "x86_64" ]; then
-    echo "✅ Test 3 Passed: Architecture is x86_64 (Linux AMD64)."
+ARCH=$(docker inspect --format '{{.Architecture}}' "$IMAGE_NAME")
+if [ "$ARCH" = "amd64" ]; then
+    echo "✅ Test 3 Passed: Architecture is amd64 (Linux AMD64)."
 else
-    echo "❌ Test 3 Failed: Expected x86_64, got '$ARCH'."
+    echo "❌ Test 3 Failed: Expected amd64, got '$ARCH'."
     exit 1
 fi
 echo ""

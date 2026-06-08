@@ -28,19 +28,18 @@ docker run --privileged --rm -v "/${PWD}":/work cgr.dev/chainguard/melange test 
 ```bash
 docker run --rm -v "/${PWD}":/work cgr.dev/chainguard/apko build apko/dasel.yaml dasel-image:latest dasel-image.tar --arch amd64 -k melange.rsa.pub
 ```
-Output: `dasel-image.tar`. apko appends the arch to the tag, so the loaded image is `dasel-image:latest-amd64`. The `@local ./packages` repository in `apko/dasel.yaml` makes apko install the APK you built in Step 1. `-k` lets apko trust the Melange signing key.
+Output: `dasel-image.tar`. The `@local ./packages` repository in `apko/dasel.yaml` makes apko install the APK you built in Step 1. `-k` lets apko trust the Melange signing key. apko appends the arch to the tag, so the loaded image is `dasel-image:latest-amd64`.
 
 **Step 4 — Load the image**
 ```bash
 docker load --input dasel-image.tar
 ```
-The loaded tag will be `dasel-image:latest-amd64`.
 
 **Step 5 — Run image tests**
 ```bash
 bash tests/test.sh
 ```
-Four tests: binary present, JSON query via stdin, architecture is x86_64, CVE-2026-33320 patch rejects a YAML alias bomb.
+Four tests: binary present and runnable, JSON query via stdin, architecture is amd64, CVE-2026-33320 patch rejects a YAML alias bomb.
 
 ---
 
@@ -61,5 +60,4 @@ Commands run: `melange keygen` → `melange build` → `melange test` → `apko 
 All steps passed on linux/amd64.
 
 **What I'd improve with more time:**
-- Add a Makefile to wrap the multi-line Docker commands into single targets
 - Parameterize the image tag and tarball name in `test.sh`
