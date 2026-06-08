@@ -32,15 +32,19 @@ pipeline:
       git diff --stat
 
   - runs: |
-      go build -o dasel ./cmd/dasel
+      CGO_ENABLED=0 go build -ldflags="-s -w" -o dasel ./cmd/dasel
       mkdir -p ${{targets.destdir}}/usr/bin
       install -m 755 dasel ${{targets.destdir}}/usr/bin/dasel
 
 test:
   environment:
     contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/edge/main
+        - https://dl-cdn.alpinelinux.org/alpine/edge/community
       packages:
+        - busybox
         - dasel
   pipeline:
     - runs: |
-        dasel --version
+        dasel version

@@ -19,16 +19,26 @@ docker run --privileged --rm -v "/${PWD}":/work cgr.dev/chainguard/melange build
 ```
 Output: `packages/x86_64/dasel-3.3.1-r1.apk`
 
-**Step 2 — Build the image**
+**Step 2 — Test the package**
+```bash
+docker run --privileged --rm -v "/${PWD}":/work cgr.dev/chainguard/melange test melange/dasel.yaml --arch amd64 --repository-append //work/packages --keyring-append //work/melange.rsa.pub
+```
+
+**Step 3 — Build the image**
 ```bash
 docker run --rm -v "/${PWD}":/work cgr.dev/chainguard/apko build apko/dasel.yaml dasel-image:latest dasel-image.tar --arch amd64 -k melange.rsa.pub
 ```
 Output: `dasel-image.tar`. apko appends the arch to the tag, so the loaded image is `dasel-image:latest-amd64`. The `@local ./packages` repository in `apko/dasel.yaml` makes apko install the APK you built in Step 1. `-k` lets apko trust the Melange signing key.
 
-**Step 3 — Load and run image tests**
+**Step 4 — Load the image**
 ```bash
-docker load < dasel-image.tar
-tests/test.sh
+docker load --input dasel-image.tar
+```
+The loaded tag will be `dasel-image:latest-amd64`.
+
+**Step 5 — Run image tests**
+```bash
+bash tests/test.sh
 ```
 Four tests: binary present, JSON query via stdin, architecture is x86_64, CVE-2026-33320 patch rejects a YAML alias bomb.
 
@@ -46,11 +56,10 @@ Both return a non-zero exit code with a message containing `yaml expansion`. Tes
 
 ## Submission Note
 
-Commands run: `melange keygen` → `melange build` → `apko build` → `docker load` → `tests/test.sh`
+Commands run: `melange keygen` → `melange build` → `melange test` → `apko build` → `docker load` → `tests/test.sh`
 
 All steps passed on linux/amd64.
 
 **What I'd improve with more time:**
 - Add a Makefile to wrap the multi-line Docker commands into single targets
 - Parameterize the image tag and tarball name in `test.sh`
-- Replace Hebrew comments in the YAML and shell files with English
