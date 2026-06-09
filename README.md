@@ -39,7 +39,7 @@ docker load --input dasel-image.tar
 ```bash
 bash tests/test.sh
 ```
-Four tests: binary present and runnable, JSON query via stdin, architecture is amd64, CVE-2026-33320 patch rejects a YAML alias bomb.
+Ten tests: binary present and runnable, JSON flat key query, architecture is amd64, CVE budget limit rejects a YAML alias bomb, normal YAML green-path read, nested JSON path, array index access, TOML format, CVE depth limit rejects a 33-level alias chain, malformed JSON rejected.
 
 ---
 
