@@ -29,10 +29,6 @@ pipeline:
       patches: CVE-2026-33320.patch
 
   - runs: |
-      echo "=== Verifying applied patch ==="
-      git diff --stat
-
-  - runs: |
       CGO_ENABLED=0 go build -ldflags="-s -w" -o dasel ./cmd/dasel
       mkdir -p ${{targets.destdir}}/usr/bin
       install -m 755 dasel ${{targets.destdir}}/usr/bin/dasel
